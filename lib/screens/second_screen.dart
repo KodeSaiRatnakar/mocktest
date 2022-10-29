@@ -193,60 +193,68 @@ class _SecondScreenState extends State<SecondScreen> {
 }
 
 Widget customListView(List<Topic> list, BuildContext context) {
-  return ListView.builder(
+  return Scrollbar(
+thickness: 15,
+    radius: Radius.circular(10),
+    thumbVisibility: true,
+    child: Padding(
+      padding: const EdgeInsets.only(right: 8.0),
+      child: ListView.builder(
 
-    itemCount: list.length,
-    itemBuilder: (context, index) {
-      topic[index] ??= false;
-      moreItemsSelect[index] ??= {};
+        itemCount: list.length,
+        itemBuilder: (context, index) {
+          topic[index] ??= false;
+          moreItemsSelect[index] ??= {};
 
 
-      bool is_selected = false;
-      return StatefulBuilder(builder: (context, setState) {
-        return Column(
-          children: [
-            Row(
+          bool is_selected = false;
+          return StatefulBuilder(builder: (context, setState) {
+            return Column(
               children: [
-                Checkbox(
-                    side: const BorderSide(color: Colors.blueAccent, width: 2),
-                    value: topic[index],
-                    onChanged: (_) {
-                      setState(() {
-                        topic[index]!
-                            ? topic[index] = false
-                            : topic[index] = true;
-                      });
-                    }),
-                FittedBox(
-                    child: Text(
-                  list[index].topicName,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w500,
-                  ),
-                )),
-                const Spacer(),
-                IconButton(
-                    onPressed: () {
-                      setState(() {
-                        is_selected ? is_selected = false : is_selected = true;
+                Row(
+                  children: [
+                    Checkbox(
+                        side: const BorderSide(color: Colors.blueAccent, width: 2),
+                        value: topic[index],
+                        onChanged: (_) {
+                          setState(() {
+                            topic[index]!
+                                ? topic[index] = false
+                                : topic[index] = true;
+                          });
+                        }),
+                    FittedBox(
+                        child: Text(
+                      list[index].topicName,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w500,
+                      ),
+                    )),
+                    const Spacer(),
+                    IconButton(
+                        onPressed: () {
+                          setState(() {
+                            is_selected ? is_selected = false : is_selected = true;
 
 
 
-                      });
-                    },
-                    icon: const Icon(Icons.keyboard_arrow_down))
+                          });
+                        },
+                        icon: const Icon(Icons.keyboard_arrow_down))
+                  ],
+                ),
+                Visibility(
+                  visible: is_selected,
+                  child: SizedBox(
+                      height: (55.0 * list[index].topics.length),
+                      child: moreTopicListView(list[index].topics, context, index)),
+                )
               ],
-            ),
-            Visibility(
-              visible: is_selected,
-              child: SizedBox(
-                  height: (55.0 * list[index].topics.length),
-                  child: moreTopicListView(list[index].topics, context, index)),
-            )
-          ],
-        );
-      });
-    },
+            );
+          });
+        },
+      ),
+    ),
   );
 }
 
