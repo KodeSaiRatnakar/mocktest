@@ -16,6 +16,7 @@ ScrollController controller = ScrollController();
 Map<int, bool> topic = {};
 Map<int, Map<int, bool>> moreItemsSelect = {};
 
+
 class SecondScreen extends StatefulWidget {
   const SecondScreen({Key? key}) : super(key: key);
 
@@ -152,17 +153,61 @@ class _SecondScreenState extends State<SecondScreen> {
               Center(
                 child: InkWell(
                   onTap: () async {
-                    if (mockTestName.text.isNotEmpty) {
-                      await LocalDataBase.writeData(mockTestName.text);
-                    }
 
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const HomeScreen()));
-                    mockTestName.clear();
-                    topic = {};
-                    moreItemsSelect = {};
+
+
+                    if ( anyExamIsSelected() && mockTestName.text.isNotEmpty) {
+
+                      if (mockTestName.text.isNotEmpty) {
+                        await LocalDataBase.writeData(mockTestName.text);
+                      }
+
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const HomeScreen()));
+                      mockTestName.clear();
+
+                      topic = {};
+                      moreItemsSelect = {};
+                    }else{
+
+                      showDialog(
+                          context: context,
+                          builder: (context) => Center(
+                              child: Container(
+                                height: 200,
+                                width: 300,
+                                decoration: BoxDecoration(
+                                    color: Colors.blueAccent,
+                                    borderRadius: BorderRadius.circular(20)),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Center(
+                                      child: Text(
+                                        "Select any of the Topics !",
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            decoration: TextDecoration.none,
+                                            fontSize: 15),
+
+                                      ),
+                                    ),
+                                    const SizedBox(height: 15,),
+
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(7),
+                                      child: Material(
+                                        child: IconButton(onPressed: (){
+                                          Navigator.pop(context);
+                                        }, icon: Icon(Icons.close)),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              )));
+                    }
                   },
                   child: Container(
                       width: mediasize.width * 0.6,
@@ -193,19 +238,20 @@ class _SecondScreenState extends State<SecondScreen> {
 }
 
 Widget customListView(List<Topic> list, BuildContext context) {
+  ScrollController controller = ScrollController();
   return Scrollbar(
-thickness: 15,
+    controller: controller,
+    thickness: 15,
     radius: Radius.circular(10),
     thumbVisibility: true,
     child: Padding(
       padding: const EdgeInsets.only(right: 8.0),
       child: ListView.builder(
-
+        controller: controller,
         itemCount: list.length,
         itemBuilder: (context, index) {
           topic[index] ??= false;
           moreItemsSelect[index] ??= {};
-
 
           bool is_selected = false;
           return StatefulBuilder(builder: (context, setState) {
@@ -214,7 +260,8 @@ thickness: 15,
                 Row(
                   children: [
                     Checkbox(
-                        side: const BorderSide(color: Colors.blueAccent, width: 2),
+                        side: const BorderSide(
+                            color: Colors.blueAccent, width: 2),
                         value: topic[index],
                         onChanged: (_) {
                           setState(() {
@@ -222,6 +269,7 @@ thickness: 15,
                                 ? topic[index] = false
                                 : topic[index] = true;
                           });
+
                         }),
                     FittedBox(
                         child: Text(
@@ -234,10 +282,9 @@ thickness: 15,
                     IconButton(
                         onPressed: () {
                           setState(() {
-                            is_selected ? is_selected = false : is_selected = true;
-
-
-
+                            is_selected
+                                ? is_selected = false
+                                : is_selected = true;
                           });
                         },
                         icon: const Icon(Icons.keyboard_arrow_down))
@@ -247,7 +294,8 @@ thickness: 15,
                   visible: is_selected,
                   child: SizedBox(
                       height: (55.0 * list[index].topics.length),
-                      child: moreTopicListView(list[index].topics, context, index)),
+                      child: moreTopicListView(
+                          list[index].topics, context, index)),
                 )
               ],
             );
@@ -282,9 +330,12 @@ Widget moreTopicListView(
                       moreItemsSelect[parentIndex]![index]!
                           ? moreItemsSelect[parentIndex]![index] = false
                           : moreItemsSelect[parentIndex]![index] = true;
-
                     });
-                  }),
+
+
+                  }
+
+                  ),
               FittedBox(
                   child: Text(
                 list[index],
@@ -296,4 +347,21 @@ Widget moreTopicListView(
           );
         });
       });
+}
+
+
+bool anyExamIsSelected (){
+  bool ans = false;
+  for(int i=0;i<topic.length;i++){
+    if(topic[i]!){
+      return topic[i]!;
+    }else{
+      for(int j=0;j<moreItemsSelect[i]!.length;j++){
+        if(moreItemsSelect[i]![j]!){
+          return moreItemsSelect[i]![j]!;
+        }
+      }
+    }
+  }
+  return ans;
 }
