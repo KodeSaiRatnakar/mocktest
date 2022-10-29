@@ -19,7 +19,7 @@ class TopicsBloc extends Bloc<LoadStudyTopicEvent, TopicState> {
         emit(TopicsLoadedState(topics: [
           Topic(topicName: "sai", topics: ["ssgfda", "adff"])
         ]));
-        print("error");
+
       }
     });
   }

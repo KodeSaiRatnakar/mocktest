@@ -113,7 +113,7 @@ Widget savedMockTest(BuildContext context) {
               }
               setAmorPm();
 
-              String timeOfCreated = monthName[month].toString()+" "+day.toString()+", "+year.toString()+" "+ hour.toString()+":"+min.toString()+amOrPm;
+              String timeOfCreated = monthName[month-1].toString()+" "+day.toString()+", "+year.toString()+" "+ hour.toString()+":"+min.toString()+amOrPm;
               return Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
